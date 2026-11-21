@@ -738,6 +738,7 @@ display:grid;place-items:center;font-size:1.5rem;box-shadow:0 3px 8px rgba(0,0,0
 #skip{opacity:1!important;padding:.75rem 2.2rem!important;border-radius:99px!important;border:1px solid rgba(255,214,120,.85)!important;background:linear-gradient(135deg,#e0a95b,#c93d68)!important;color:#fff!important;font:600 1.1rem Georgia,serif!important;position:static!important;margin-top:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 16px rgba(255,214,120,.45)}
 #askBox{width:min(92vw,420px)!important;box-sizing:border-box;background:rgba(26,10,22,.92);border:1px solid rgba(255,214,120,.4);border-radius:18px;padding:.9rem 1rem!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 #pl #playlistItems{max-height:none!important;overflow:visible!important}
+.scene:not(.show),.scene:not(.show) *{pointer-events:none!important}
 </style>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
@@ -1125,7 +1126,7 @@ tailwind.config={important:'#pl',corePlugins:{preflight:false},theme:{extend:{co
     <div class="front"></div>
     <div class="bottom"></div>
     <div class="flap"></div>
-    <div class="seal">♥</div>
+    <div class="seal">★</div>
   </div>
   <div class="hint">Tap the envelope to open it</div>
   <div class="next" id="askBox" style="display:none"><div class="ask-q" style="font-size:clamp(1.05rem,4.5vw,1.3rem);line-height:1.5;max-width:92vw;margin:0 auto"><div style="font-size:clamp(1.4rem,6.4vw,1.8rem);margin-bottom:.35rem">Happy Birthday, Vineeta!! 🎉</div>Enjoy your day…<br>If you’ve reached here, that means my vibe-coding project ran successfully in production, and I’d love to hear your user feedback…<div style="margin-top:.45rem">Thanks for your time!</div></div><div class="ask-btns" id="askBtns" style="display:none"><button class="ask-yes" id="askYes">Yes 💖</button><button class="ask-no" id="askNo">No</button></div><div class="ask-res" id="askRes"></div></div>
@@ -1891,7 +1892,7 @@ function drawBirthday(t){
   const y=H*.115+Math.sin(t/900)*4,gx=ctx.createLinearGradient(W*.2,y-fs/2,W*.8,y+fs/2);gx.addColorStop(0,'#fff3c0');gx.addColorStop(.5,'#ffd36a');gx.addColorStop(1,'#ff9fc4');
   ctx.shadowColor='rgba(255,120,170,.9)';ctx.shadowBlur=22;ctx.fillStyle=gx;ctx.fillText('Happy Birthday',W/2,y);
   ctx.shadowBlur=0;ctx.lineWidth=1.2;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.strokeText('Happy Birthday',W/2,y);
-  ctx.font=`${Math.round(fs*.6)}px "Great Vibes",cursive`;ctx.fillStyle='#fff';ctx.shadowColor='rgba(232,82,122,.9)';ctx.shadowBlur=14;ctx.fillText(NAME+' ♥',W/2,y+fs*.78);
+  ctx.font=`${Math.round(fs*.6)}px "Great Vibes",cursive`;ctx.fillStyle='#fff';ctx.shadowColor='rgba(232,82,122,.9)';ctx.shadowBlur=14;ctx.fillText(NAME+' 🎉🥳',W/2,y+fs*.78);
   ctx.restore();
   star4(ctx,W*.18,y-fs*.1,fs*.16,.5+.5*Math.sin(t/300));star4(ctx,W*.84,y+fs*.2,fs*.12,.5+.5*Math.sin(t/260+2));star4(ctx,W*.72,y-fs*.35,fs*.09,.5+.5*Math.sin(t/340+1));
   // confetti
@@ -1946,10 +1947,10 @@ function frame(t){
   if(has('birthday'))drawBirthday(t);
   dreamyTop(t);
   const hint=$('sf_hint');
-  if(stillMode){hint.textContent='Drag to move · pinch to resize & turn the crown and mask onto your face 💕';hint.style.opacity=1;$('sf_diag').style.opacity=0}
+  if(stillMode){hint.textContent='Drag to move · pinch to resize & turn the crown and mask onto your face 🎉';hint.style.opacity=1;$('sf_diag').style.opacity=0}
   else if(trackState==='loading'&&!DEMO){hint.textContent='Getting the magic ready… ✨';hint.style.opacity=1}
-  else if(trackState==='fail'){hint.textContent='Drag to move · pinch to resize & turn — fit the crown to your face 💕';hint.style.opacity=1;const d=$('sf_diag');d.textContent='Face tracking could not start: '+(trackErr||'unknown reason');d.style.opacity=1}
-  else if(want&&!g){hint.textContent='Show your face to the camera 💕';hint.style.opacity=1}
+  else if(trackState==='fail'){hint.textContent='Drag to move · pinch to resize & turn — fit the crown to your face 🎉';hint.style.opacity=1;const d=$('sf_diag');d.textContent='Face tracking could not start: '+(trackErr||'unknown reason');d.style.opacity=1}
+  else if(want&&!g){hint.textContent='Show your face to the camera 🎉';hint.style.opacity=1}
   else hint.style.opacity=0;
 }
 
