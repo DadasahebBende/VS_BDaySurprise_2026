@@ -737,6 +737,7 @@ display:grid;place-items:center;font-size:1.5rem;box-shadow:0 3px 8px rgba(0,0,0
 #plGo{position:fixed!important;left:50%!important;transform:translateX(-50%)!important;bottom:calc(16px + env(safe-area-inset-bottom,0px))!important;margin:0!important;z-index:60!important;white-space:nowrap}
 #skip{opacity:1!important;padding:.75rem 2.2rem!important;border-radius:99px!important;border:1px solid rgba(255,214,120,.85)!important;background:linear-gradient(135deg,#e0a95b,#c93d68)!important;color:#fff!important;font:600 1.1rem Georgia,serif!important;position:static!important;margin-top:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 16px rgba(255,214,120,.45)}
 #askBox{width:min(92vw,420px)!important;box-sizing:border-box;background:rgba(26,10,22,.92);border:1px solid rgba(255,214,120,.4);border-radius:18px;padding:.9rem 1rem!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#pl #playlistItems{max-height:none!important;overflow:visible!important}
 </style>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
@@ -881,7 +882,7 @@ tailwind.config={important:'#pl',corePlugins:{preflight:false},theme:{extend:{co
                                 class="w-full h-full border-0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                                 allowfullscreen
-                                src="https://www.youtube-nocookie.com/embed/k3g_E-O_Rnc?enablejsapi=1&controls=1&playsinline=1"
+                                
                                 title="YouTube Romantic Playlist Player">
                             </iframe>
                         </div>
@@ -1569,7 +1570,7 @@ function ageParts(now){const b=new Date(BIRTH_UTC+IST),n=new Date(now+IST);
   return {y,m,d,h:Math.floor(t/3600),mi:Math.floor(t%3600/60),s:t%60}}
 function nextBday(now){const n=new Date(now+IST);let y=n.getUTCFullYear();
   let t=Date.UTC(y,11,10,5,30,0);if(t+86399e3<now)t=Date.UTC(y+1,11,10,5,30,0);return Math.ceil((t-now)/86400e3)}
-function startLife(){const s=document.getElementById('lf'),h=document.getElementById('lfh'),g=id=>document.getElementById('L_'+id);
+function startLife(){try{warmPlaylist()}catch(e){}const s=document.getElementById('lf'),h=document.getElementById('lfh'),g=id=>document.getElementById('L_'+id);
   sceneIn(s);const t0=performance.now();let raf=0,last=0;const p2=n=>String(n).padStart(2,'0');
   function tick(ts){if(ts-last>90){last=ts;const now=Date.now(),E=(now-BIRTH_UTC)/1000,k=Math.min(1,(ts-t0)/2800),e=1-Math.pow(1-k,3),A=ageParts(now);
     g('age').textContent=`${A.y} years · ${A.m} months · ${A.d} days`;g('clk').textContent=`${p2(A.h)}:${p2(A.mi)}:${p2(A.s)}`;
@@ -1670,6 +1671,7 @@ function startMW(){
 // ---- Playlist screen: the player code itself is the owner's original (see the second <script> block) ----
 function startPlaylist(){
   const sc=document.getElementById('pl');
+  try{warmPlaylist()}catch(e){}
   stopS89();
   if(aud){try{aud.pause()}catch(e){}}
   document.getElementById('plGo').onclick=()=>{
@@ -2439,12 +2441,26 @@ const SCREENS=[
         // Initialize script load
         (function init() {
             loadPlaylist();
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            /* YouTube API now loads lazily (warmPlaylist) */
         })();
     </script>
+<script>
+(function(){
+ let warm=false,apiTag=false,ifLoaded=false,apiOk=false,iframe=null;
+ const ifr=()=>iframe||(iframe=document.getElementById('youtube-player'));
+ const url=(it,auto)=>(it.type==='playlist'?'https://www.youtube-nocookie.com/embed/videoseries?list='+it.id+'&':'https://www.youtube-nocookie.com/embed/'+it.id+'?')+'enablejsapi=1&controls=1&playsinline=1&rel=0&autoplay='+(auto?1:0)+(/^https?:$/.test(location.protocol)?'&origin='+encodeURIComponent(location.origin):'');
+ const spin=(on,msg)=>{let d=document.getElementById('ytLoad');if(!d){const w=document.getElementById('player-wrapper');if(!w)return;d=document.createElement('div');d.id='ytLoad';d.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ffe9b0;font:1rem Georgia,serif;background:rgba(26,10,22,.6);z-index:5;pointer-events:none;text-align:center;padding:1rem';w.appendChild(d)}d.textContent=msg||'Loading your songs… 🎶';d.style.display=on?'flex':'none'};
+ function tryInit(){if(apiOk&&ifLoaded&&!player&&window.YT&&YT.Player){isApiReady=false;player=new YT.Player('youtube-player',{events:{onReady:window.onPlayerReady,onStateChange:onPlayerStateChange,onError:onPlayerError}})}}
+ window.onYouTubeIframeAPIReady=function(){apiOk=true;tryInit()};
+ window.onPlayerReady=function(){isApiReady=true;const b=document.getElementById('playerBadge');if(b)b.textContent='READY'};
+ function load(it,auto){player=null;isApiReady=false;ifLoaded=false;spin(true);ifr().src=url(it,auto)}
+ window.updateIframeSource=function(item){load(item,true)};
+ window.warmPlaylist=function(){if(warm)return;warm=true;ifr().addEventListener('load',()=>{ifLoaded=true;spin(false);tryInit()});
+  if(!apiTag){apiTag=true;const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';t.async=true;document.head.appendChild(t)}
+  if(playlist.length)load(playlist[0],false);
+  setTimeout(()=>{if(!ifLoaded)spin(true,'Still loading… you can also tap ▶ inside the player')},10000)};
+})();
+</script>
 <div id="lock" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:calc(20px + env(safe-area-inset-top,0px)) 1.2rem calc(20px + env(safe-area-inset-bottom,0px));color:#ffe9b0;font-family:Georgia,serif;background:radial-gradient(circle at 50% 35%,#4a1646,#1a0a16 70%);transition:opacity .8s;user-select:none;-webkit-user-select:none">
 <div style="font-size:2.6rem">🔐</div>
 <div style="font-size:1.6rem;line-height:1.25">A little secret</div>
