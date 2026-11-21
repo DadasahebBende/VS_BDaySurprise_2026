@@ -738,7 +738,7 @@ display:grid;place-items:center;font-size:1.5rem;box-shadow:0 3px 8px rgba(0,0,0
 #skip{opacity:1!important;padding:.75rem 2.2rem!important;border-radius:99px!important;border:1px solid rgba(255,214,120,.85)!important;background:linear-gradient(135deg,#e0a95b,#c93d68)!important;color:#fff!important;font:600 1.1rem Georgia,serif!important;position:static!important;margin-top:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 16px rgba(255,214,120,.45)}
 #askBox{width:min(92vw,420px)!important;box-sizing:border-box;background:rgba(26,10,22,.92);border:1px solid rgba(255,214,120,.4);border-radius:18px;padding:.9rem 1rem!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 #pl #playlistItems{max-height:none!important;overflow:visible!important}
-.scene:not(.show),.scene:not(.show) *{pointer-events:none!important}
+.scene:not(.show):not(#cover),.scene:not(.show):not(#cover) *{pointer-events:none!important}
 </style>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
